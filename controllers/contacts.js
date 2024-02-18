@@ -11,13 +11,15 @@ const {
 } = require("../db/services/contactServices");
 
 const getListContacts = async (req, res) => {
-  const contactsAll = await listContacts();
+  const {_id: owner} = req.user;
+  const contactsAll = await listContacts({owner});
   res.status(200).json(contactsAll);
 };
 
 const getContactId = async (req, res) => {
   const { id } = req.params;
-  const contact = await getContactById(id);
+  const {_id: owner} = req.user;
+  const contact = await getContactById(id, owner);
   if (!contact) {
     throw HttpError(404, "Not found");
   }
@@ -25,13 +27,15 @@ const getContactId = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-  const newContact = await createContact(req.body);
+  const {_id: owner} = req.user;
+  const newContact = await createContact({...req.body, owner});
   res.status(201).json(newContact);
 };
 
 const updateContact = async (req, res) => {
   const { id } = req.params;
-  const updateContactById = await upgradeContact(id, req.body);
+  const {_id: owner} = req.user;
+  const updateContactById = await upgradeContact(id, owner, req.body);
   if (!updateContactById) {
     throw HttpError(404, "Not found");
   }
@@ -40,10 +44,11 @@ const updateContact = async (req, res) => {
 
 const updateFavoriteContact = async (req, res) => {
   const { id } = req.params;
+  const {_id: owner} = req.user;
   if (!req.body) {
     throw HttpError(400, "Missing field favorite");
   }
-  const updateContactById = await upgradeFavorite(id, req.body);
+  const updateContactById = await upgradeFavorite(id, owner, req.body);
   if (!updateContactById) {
     throw HttpError(404, "Not found");
   }
@@ -52,7 +57,8 @@ const updateFavoriteContact = async (req, res) => {
 
 const delContact = async (req, res) => {
   const { id } = req.params;
-  const deletedContact = await removeContact(id);
+  const {_id: owner} = req.user;
+  const deletedContact = await removeContact(id, owner);
   if (!deletedContact) {
     throw HttpError(404, "Not found");
   }
