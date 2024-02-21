@@ -1,36 +1,53 @@
 const Contact = require("../models/contactModel");
 
-const listContacts = async () => {
-  const contacts = await Contact.find();
+const listContacts = async (query, pagination) => {
+  const contacts = await Contact.find(query, "", pagination).populate(
+    "owner",
+    "email"
+  );
+
   return contacts;
 };
 
-const getContactById = async (id) => {
-  const contact = await Contact.findById(id);
+const getContactById = async (id, owner) => {
+  const contact = await Contact.findOne({ _id: id, owner });
+
   return contact;
 };
 
 const createContact = async (body) => {
   const newContact = await Contact.create(body);
+
   return newContact;
 };
 
-const upgradeContact = async (id, body) => {
-  const updateContact = await Contact.findByIdAndUpdate(id, body, {
-    new: true,
-  });
+const upgradeContact = async (id, owner, body) => {
+  const updateContact = await Contact.findOneAndUpdate(
+    { _id: id, owner },
+    body,
+    {
+      new: true,
+    }
+  );
+
   return updateContact;
 };
 
-const upgradeFavorite = async (id, body) => {
-  const updateFavorite = await Contact.findByIdAndUpdate(id, body, {
-    new: true,
-  });
+const upgradeFavorite = async (id, owner, body) => {
+  const updateFavorite = await Contact.findOneAndUpdate(
+    { _id: id, owner },
+    body,
+    {
+      new: true,
+    }
+  );
+  
   return updateFavorite;
 };
 
-const removeContact = async (id) => {
-  const deleteContact = await Contact.findByIdAndDelete(id);
+const removeContact = async (id, owner) => {
+  const deleteContact = await Contact.findOneAndDelete({ _id: id, owner });
+
   return deleteContact;
 };
 
