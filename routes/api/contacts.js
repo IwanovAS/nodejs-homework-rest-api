@@ -1,4 +1,6 @@
 const express = require("express");
+const router = express.Router();
+
 const {
   isValid,
   validBody,
@@ -7,7 +9,6 @@ const {
 } = require("../../middlewares");
 
 const { schema, upgradeFavoriteSchema } = require("../../schema/schema");
-const router = express.Router();
 
 const {
   getListContacts,
